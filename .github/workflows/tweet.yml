@@ -1,5 +1,6 @@
 name: tweet
 on:
+  push: # todo: disable me after everything is working
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * *' # everyday at midnight
