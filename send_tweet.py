@@ -7,7 +7,7 @@ import time
 import tweepy
 import urllib
 
-# from dalle2 import Dalle2
+from dalle2 import Dalle2
 # from pillow_utils import *
 from string import Template
 from tenacity import retry, wait_exponential, stop_after_attempt
@@ -126,10 +126,11 @@ if __name__ == "__main__":
         prompt = prompt[:PROMPT_MAX_LENGTH]
         print(f"Truncated prompt: {prompt}")
     
+    print(f"{flavor=}")
     print(f"{prompt=}")
     print(f"{len(prompt)=}")
     
-    # call out to DALLE
+    # generate and save the image
     dalle = Dalle2(DALLE_SESSION_BEARER_TOKEN)
     # generations = dalle.generate(prompt)
     # generations = dalle.generate_and_download(prompt, 1, 'img')

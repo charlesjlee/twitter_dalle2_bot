@@ -171,8 +171,10 @@ def merge_vertically(top_image, bottom_image, overlap=0, image_priority='bottom'
 
     return merged_image
 
-# not tested
+# todo: test me
 def merge_vertically_sequentially(images, overlap=0, image_priority='bottom'):
+    raise NotImplementedError("need to test before using!")
+    
     if not images: return None
     if len(images) == 1: return images[0]
     if image_priority == 'top': raise NotImplementedError()
