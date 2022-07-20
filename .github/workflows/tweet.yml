@@ -2,7 +2,7 @@ name: tweet
 on:
   workflow_dispatch:
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '0 0 * * *' # everyday at midnight
 jobs:
   tweet:
     runs-on: ubuntu-latest
@@ -13,13 +13,13 @@ jobs:
         python-version: '3.9'
         cache: 'pip'
     - run: pip install -r requirements.txt
-    - run: python -c 'print(42)'
-    # - run: python ./tweet.py
-      # env:
-      #   CONSUMER_KEY: ${{ secrets.consumer_key }}
-      #   CONSUMER_SECRET: ${{ secrets.consumer_secret }}
-      #   ACCESS_TOKEN: ${{ secrets.access_token }}
-      #   ACCESS_TOKEN_SECRET: ${{ secrets.access_token_secret }}
+    - run: python ./send_tweet.py
+       env:
+         DALLE_SESSION_BEARER_TOKEN: ${{ secrets.DALLE_SESSION_BEARER_TOKEN }}
+         # CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
+      #   CONSUMER_SECRET: ${{ secrets.CONSUMER_SECRET }}
+      #   ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+      #   ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
     # - run: |
     #     git config user.name github-actions
     #     git config user.email github-actions@github.com
