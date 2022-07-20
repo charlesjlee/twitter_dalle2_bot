@@ -13,7 +13,7 @@ jobs:
         python-version: '3.9'
         cache: 'pip'
     - run: pip install -r requirements.txt
-    - run: python -c print("lol")
+    - run: python -c 'print(42)'
     # - run: python ./tweet.py
       # env:
       #   CONSUMER_KEY: ${{ secrets.consumer_key }}
