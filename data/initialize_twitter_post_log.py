@@ -15,6 +15,7 @@ pd.set_option('display.max_colwidth', None)
 from pathlib import Path
 
 FILE_PATH = 'twitter_post_log.csv'
+RANDOM_STATE=123
 
 COLUMNS = [
     'timestamp',
@@ -23,7 +24,6 @@ COLUMNS = [
     'quote_source',
     'image_prompt',
     'image_file',
-    'image_file_upscaled',
     'image_file_motivational',
     'tweet_link',
     'tweet_id',
@@ -125,7 +125,7 @@ if __name__ == "__main__":
     if Path(FILE_PATH).is_file():
         sys.exit("aborting initialization because file already exists!")
         pass
-    
+
     # create anime dataframe
     anime_df = pd.DataFrame(get_anime_quotes(), columns=COLUMNS)
 
@@ -145,13 +145,13 @@ if __name__ == "__main__":
     # need sample number as for anime_df, i.e. 200
     # target similar quote length
     bible_df = pd.DataFrame(get_and_filter_bible_quotes(), columns=COLUMNS)
-    bible_df = bible_df.sample(200, random_state=123)
+    bible_df = bible_df.sample(200, random_state=RANDOM_STATE)
 
     print(f"{len(get_bible_quotes())=}")
     print(f"{len(get_and_filter_bible_quotes())=}")
 
     combined_df = pd.concat([bible_df, anime_df])
-    combined_df = combined_df.sample(frac=1).reset_index(drop=True) # shuffle in-place
+    combined_df = combined_df.sample(frac=1, random_state=RANDOM_STATE).reset_index(drop=True) # shuffle in-place
     combined_df.to_csv(FILE_PATH, index=False, encoding='utf-8')
 
     print(42*'-' + '\nScript succeeded!')

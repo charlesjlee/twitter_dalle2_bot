@@ -25,27 +25,29 @@ class size_2048_1024:
 
 # 1 up & to the sides (9 calls)
 class size_2048_2048:
-    pass
+    pass # too expensive
 
 # 3 in all directions (46 calls)
 class size_8192_8192:
-    pass
+    pass # too expensive
 
 # 2 up, 4 to the sides (45 calls)
 class size_10240_6144:
-    pass
+    pass # too expensive
 
 motivational_meme_parameters = {
     (1024, 1024): size_1024_1024,
     (2048, 1024): size_2048_1024,
 }
 
-def generate_motivational_meme(image, quote, source):
+def generate_motivational_meme(image_path, quote, source):
     FONT = 'Libre_Baskerville/LibreBaskerville-Regular.ttf'
-    param = motivational_meme_parameters[image.size]
     
+    image = Image.open(image_path)
     m, n = image.size
     print(f"m={m}, n={n}")
+    param = motivational_meme_parameters[image.size]
+    
     image = ImageOps.expand(image, border=3, fill='white')
     image = ImageOps.expand(
         image,
@@ -144,16 +146,15 @@ def merge_horizontally(left_image, right_image, overlap=0, image_priority='right
 
     return merged_image
 
-def merge_horizontally_sequentially(images, overlap=0, image_priority='right'):
-    if not images: return None
-    if len(images) == 1: return images[0]
+def merge_horizontally_sequentially(image_paths, overlap=0, image_priority='right'):
+    if not image_paths: return None
+    if len(image_paths) == 1: return Image.open(image_paths[0])
     if image_priority == 'left': raise NotImplementedError()
-    
-    left = images[0]
-    m, _n = left.size
-    for image in images[1:]:
-        left = merge_horizontally(left, image, overlap=m//2, image_priority='right')
-    
+
+    left = Image.open(image_paths[0])
+    for image_path in image_paths[1:]:
+        left = merge_horizontally(left, Image.open(image_path), overlap=overlap, image_priority='right')
+
     return left
 
 def merge_vertically(top_image, bottom_image, overlap=0, image_priority='bottom'):
@@ -172,22 +173,20 @@ def merge_vertically(top_image, bottom_image, overlap=0, image_priority='bottom'
     return merged_image
 
 # todo: test me
-def merge_vertically_sequentially(images, overlap=0, image_priority='bottom'):
+def merge_vertically_sequentially(image_paths, overlap=0, image_priority='bottom'):
     raise NotImplementedError("need to test before using!")
-    
-    if not images: return None
-    if len(images) == 1: return images[0]
+
+    if not image_paths: return None
+    if len(image_paths) == 1: return Image.open(image_paths[0])
     if image_priority == 'top': raise NotImplementedError()
-    
-    top = images[0]
-    _m, n = left.size
-    for image in images[1:]:
-        top = merge_vertically(top, image, overlap=n//2, image_priority='bottom')
-    
+
+    top = Image.open(image_paths[0])
+    for image_path in image_paths[1:]:
+        top = merge_vertically(top, Image.open(image_path), overlap=overlap, image_priority='bottom')
+
     return top
 
 def transparent_crop(image, crop):
-    # print(f"{image.size=}")
     m, n = image.size
     area_to_keep = {
         'left': (m//2, 0, m, n),
@@ -199,44 +198,42 @@ def transparent_crop(image, crop):
     image_alpha = Image.new("L", image.size, 0)
     draw = ImageDraw.Draw(image_alpha)
     draw.rectangle(area_to_keep[crop], fill=255)
-    
+
     image_rgba = image.copy()
     image_rgba.putalpha(image_alpha)
     return image_rgba    
 
-# test functions above
-if __name__ == "__main__2":
+# test functions
+if __name__ == "__main__":
     image = Image.open('test/size_1024_1024.jpg')
-    n = image.size[0]
-    
-    test_horizontally = roll_horizontally(image.copy(), n//2)
-    # test_horizontally.show()
-    
-    test_vertically = roll_vertically(image.copy(), n//2)
-    # test_vertically.show()
-    
+    m, n = image.size
+
+    test_horizontally = roll_horizontally(image.copy(), m//2)
+    test_horizontally.show()
+
+    test_vertically = roll_vertically(image.copy(), m//2)
+    test_vertically.show()
+
     test_merge_horizontally = merge_horizontally(
-        test_horizontally, test_vertically, overlap=n//2, image_priority='right')
-    # test_merge_horizontally.show()
-    
+        test_horizontally.copy(), test_vertically.copy(), overlap=m//2)
+    test_merge_horizontally.show()
+
     test_merge_vertically = merge_vertically(
-        test_horizontally, test_vertically, overlap=n//2)
+        test_horizontally.copy(), test_vertically.copy(), overlap=n//2)
     test_merge_vertically.show()
 
-# test transparent crop
-if __name__ == "__main__2":
-    image = Image.open('test/size_1024_1024.jpg')
+    image = Image.open('test/size_1024_1024 (2).jpg')
     transparent_crop(image, 'left').show()
     transparent_crop(image, 'right').show()
     transparent_crop(image, 'top').show()
     transparent_crop(image, 'bottom').show()
 
-# test motivational creation
-if __name__ == "__main__":
-    image = Image.open('test/size_1024_1024.jpg')
-    image = Image.open('test/size_2048_1024.png')
-    
     QUOTE = "Did ever people hear the voice of God speaking out of the midst of the fire, as thou hast heard, and live?"
     SOURCE = "Deuteronomy 4:33"
-    image = generate_motivational_meme(image, QUOTE, SOURCE)
-    image.show()    
+
+    image = generate_motivational_meme('test/size_1024_1024.jpg', QUOTE, SOURCE)
+    image.show()
+
+    image = generate_motivational_meme('test/size_2048_1024.png', QUOTE, SOURCE)
+    image.show()
+  

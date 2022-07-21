@@ -1,14 +1,10 @@
-import json
-import os
 import random
+import string
 import sys
-import time
-import time 
 import tweepy
-import urllib
 
 from dalle2 import Dalle2
-# from pillow_utils import *
+from pillow_utils import generate_motivational_meme
 from string import Template
 from tenacity import retry, wait_exponential, stop_after_attempt
 
@@ -28,7 +24,6 @@ COLUMNS = [
     'quote_source',
     'image_prompt',
     'image_file',
-    'image_file_upscaled',
     'image_file_motivational',
     'tweet_link',
     'tweet_id',
@@ -37,7 +32,7 @@ COLUMNS = [
 AESTHETIC = [
     'anime', 'cartoon', 'cyberpunk', 'dieselpunk', 'fantasy', 'gothic',
     'horror', 'indie', 'kawaii', 'memphis', 'post-apocalyptic', 'realistic',
-    'sci-fi', 'steampunk', 'urban', 'vaporpunk', 'vaporwave', 
+    'sci-fi', 'steampunk', 'urban', 'vaporpunk', 'vaporwave',
 ]
 
 MEDIUM = [
@@ -51,7 +46,7 @@ STYLE = [
     'surrealism', 'street art', 'street photography', 'art deco', 'cubism',
     'dada', 'expressionism', 'art nouveau', 'impressionism', 'neoclassicism',
     'baroque', 'renaissance painting', 'cave painting', 'portrait',
-    'byzantine', 'ancient', 
+    'byzantine', 'ancient',
 ]
 
 ARTIST = [
@@ -62,51 +57,37 @@ ARTIST = [
     'Yoshitoshi', 'Vincent van Gogh', 'Raphael', 'Gustav Klimt', 'Rembrandt',
     'Edvard Munch', 'El Greco', 'John Singer Sargent', 'Amedeo Modigliani',
     'Wassily Kandinsky', 'Georges Seurat', 'Sol LeWitt', 'Henri Rousseau',
-    'Edward Hopper', 'Franz Marc', 
+    'Edward Hopper', 'Franz Marc',
 ]
 
 FLAVOR = Template('$aesthetic $style $medium in the style of $artist')
 PROMPT = Template('$quote, $flavor')
 PROMPT_MAX_LENGTH = 400
+IMAGE_DIR = 'img'
 
 @retry(wait=wait_exponential(multiplier=1, min=1, max=60), stop=stop_after_attempt(5))
-def get_latest_tweets_by_followers(api, count=10):
-    follower_tweets = [
-        (tweet.id_str, tweet.full_text)
-        for friend_id in api.get_friend_ids()
-        for tweet in api.user_timeline(
-            tweet_mode='extended',
-            user_id=friend_id,
-            count=count,
-            include_rts=False,
-            exclude_replies=True,
-        )
-    ]
-    print(f"follower_tweets\n{follower_tweets}\n\n")
-    return follower_tweets
+def upload_media(api, image_path):
+    return api.media_upload(image_path)
 
 @retry(wait=wait_exponential(multiplier=1, min=1, max=60), stop=stop_after_attempt(5))
-def tweet_reply(api, follower_tweet_id, tweet):
-    return api.update_status(status=tweet,
-                             in_reply_to_status_id=follower_tweet_id,
-                             auto_populate_reply_metadata=True)
+def tweet(api, media_ids, status):
+    return api.update_status(media_ids=media_ids,status=status)
 
 if __name__ == "__main__":
     # auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     # auth.set_access_token(access_token, access_token_secret)
     # api = tweepy.API(auth)
-    # follower_tweets = get_latest_tweets_by_followers(api)
-    
+
     # note: must call initialize_twitter_post_log.py before first run
     df = pd.read_csv(FILE_PATH, encoding='utf-8')
-    
+
     # get index of first row without a timestamp
     df_empty_timestamp = df[df.timestamp.isnull()]
     if df_empty_timestamp.empty:
         raise Exception("No more records with empty timestamps! Time to reseed the table!")
     i = df_empty_timestamp.index[0]
     print(f"{i=}")
-    
+
     # generate the prompt
     random.seed(i.item())
     flavor = FLAVOR.substitute(
@@ -125,35 +106,38 @@ if __name__ == "__main__":
         print(f"Original prompt: {prompt}")
         prompt = prompt[:PROMPT_MAX_LENGTH]
         print(f"Truncated prompt: {prompt}")
-    
+
     print(f"{flavor=}")
     print(f"{prompt=}")
     print(f"{len(prompt)=}")
-    
-    # generate and save the image
-    dalle = Dalle2(DALLE_SESSION_BEARER_TOKEN)
-    # generations = dalle.generate(prompt)
-    # generations = dalle.generate_and_download(prompt, 1, 'img')
-    
-    sys.exit(1)
-    print(f"{generations=}")
 
-    # update record
+    # generate image and save
+    dalle = Dalle2(DALLE_SESSION_BEARER_TOKEN)
+    sys.exit(1) # todo: delete me
+    image = dalle.generate_2048_1024(prompt, flavor, 'temp')
+    image_name = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+    image_path = f"{IMAGE_DIR}/{image_name}.png"
+    image.save(image_path)
+
+    # generate motivational image and save
+    motivational_image_path = f"{IMAGE_DIR}/{image_name}_motivational.png"
+    image = generate_motivational_meme(image_path, df.quote[i], df.quote_source[i])
+    image.save(motivational_image_path)
+
+    # upload media then send tweet
+    media_1 = upload_media(api, image_path)
+    media_2 = upload_media(api, motivational_image_path)
+    status = tweet(api, [media_1.media_id_string, media_2.media_id_string], "Bible or anime?")
+
+    # save data file with updated record
     df.at[i, 'timestamp'] = pd.Timestamp.utcnow()
     df.at[i, 'image_prompt'] = prompt
-    # add flavor!
-    # df.at[i, 'image_file'] = prompt
-    # df.at[i, 'image_file_upscaled'] = prompt
-    # df.at[i, 'image_file_upscaled'] = prompt
-
-    sys.exit(1)
-    status = tweet_reply(api, new_follower_tweet[0], new_tweet.text.item())
+    df.at[i, 'image_file'] = image_path
+    df.at[i, 'image_file_motivational'] = motivational_image_path
     df.at[i, 'tweet_id'] = status.id_str
-    # df.at[i, 'tweet_link'] = prompt
-
-    # save file with updated record
+    df.at[i, 'tweet_link'] = f"https://twitter.com/i/web/status/{status.id_str}"
     df.to_csv(FILE_PATH, index=False, encoding='utf-8')
-    
+
     print(f"\nupdated row {i} in {FILE_PATH}")
     print(f"{df.iloc[i]}")
     print(42*'-' + '\nScript succeeded!')

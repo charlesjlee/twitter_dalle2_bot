@@ -7,7 +7,7 @@ import urllib
 import urllib.request
 
 from PIL import Image
-from pillow_utils import *
+from pillow_utils import roll_horizontally, roll_vertically, transparent_crop, merge_horizontally_sequentially
 
 # grabbed July 17, 2022
 # https://github.com/ezzcodeezzlife/dalle2-in-python
@@ -53,10 +53,8 @@ class Dalle2():
         while True:
             url = f"https://labs.openai.com/api/labs/tasks/{data['id']}"
             response = requests.get(url, headers=headers)
-            # print(f"{response=}")
             data = response.json()
-            # print(f"{data=}")
-            
+
             if not response.ok:
                 print(f"Request failed with status: {response.status_code}, data: {response.json()}")
                 return None
@@ -75,14 +73,17 @@ class Dalle2():
     def download(self, generations, n=1, image_dir=os.getcwd(), file_name=None):
         if not generations:
             raise ValueError("generations is empty!")
-        
-        print(f"Download to directory: {image_dir}")
-        
+
         file_paths = []
         for i, generation in enumerate(generations[:n]):
             image_url = generation["generation"]["image_path"]
-            file_name = f"{file_name}_{i}" if file_name else generation['id']
-            file_path = f"{image_dir}/{file_name}.jpg"
+            
+            if file_name:
+                file_name = file_name if n == 1 else f"{file_name}_{i}"
+            else:
+                file_name = generation['id']
+
+            file_path = f"{image_dir}/{file_name}.png"
             file_paths.append(file_path)
             urllib.request.urlretrieve(image_url, file_path)
             print(f"✔️ Downloaded: {file_path}")
@@ -113,40 +114,66 @@ class Dalle2():
 
         return self.get_task_response(body)
 
-# 1 to the sides (3 calls)
-def generate_2048_1024(prompt, _flavor, image_dir):
-    # generate the root image
-    filepaths = dalle.generate_and_download(prompt, image_dir=image_dir, file_name='root')
-    root = Image.open(filepaths[0])
-    m, _n = root.size
-
-    # flip left & right
-    rolled = roll_horizontally(root.copy(), m//2)
+    # note: single mask file names so can't be parallelized
+    def extend_image_once(self, root, directions, prompt, flavor, image_dir):
+        m, n = root.size
+        rolled_horizontally = roll_horizontally(root.copy(), m//2)
+        rolled_vertically = roll_vertically(root.copy(), n//2)
     
-    # extend RHS of root image
-    transparent_crop(rolled.copy(), 'right').save(f"{image_dir}/right_mask.png")
-    generations = dalle.generate_from_masked_image(f"{image_dir}/right_mask.png", prompt)
-    filepaths = dalle.download(generations, image_dir=image_dir, file_name='right')
-    right = Image.open(filepaths[0])
-
-    # extend LHS of root image
-    transparent_crop(rolled.copy(), 'left').save(f"{image_dir}/left_mask.png")
-    generations = dalle.generate_from_masked_image(f"{image_dir}/left_mask.png", prompt)
-    filepaths = dalle.download(generations, image_dir=image_dir, file_name='left')
-    left = Image.open(filepaths[0])
+        for direction in directions:
+            file_path = f"{image_dir}/{direction}_mask.png"
+            rolled = rolled_horizontally if direction in ('left', 'right') else rolled_vertically
+            transparent_crop(rolled.copy(), direction).save(file_path)
+            generations = self.generate_from_masked_image(file_path, prompt)
+            self.download(generations, image_dir=image_dir, file_name=direction)
     
-    # stitch images together
-    return merge_horizontally_sequentially([left, root, right], overlap=m//2)
+    # 1 to the sides (3 calls)
+    def generate_2048_1024(self, prompt, _flavor, image_dir):
+        self.generate_and_download(prompt, image_dir=image_dir, file_name='root')
+        root = Image.open(f"{image_dir}/root.jpg")
+        m, _n = root.size
+        
+        self.extend_image_once(root, ['left', 'right'], prompt, _flavor, image_dir)
+        return merge_horizontally_sequentially(
+            [
+                f"{image_dir}/left.jpg",
+                f"{image_dir}/root.jpg",
+                f"{image_dir}/right.jpg",
+            ],
+            overlap=m//2,
+        )
 
-# 1 up & to the sides (9 calls)
-def generate_2048_2048(prompt, flavor, image_dir):
-    pass
+    # todo: ready to implement next ... but won't because API calls too expensive
+    # 1 up & to the sides (9 calls)
+    def generate_2048_2048(self, prompt, flavor, image_dir):
+        pass    
+    
+    # 3 in all directions (46 calls)
+    def generate_8192_8192(self, prompt, flavor, image_dir):
+        pass
+    
+    # 2 up, 4 to the sides (45 calls)
+    def generate_10240_6144(self, prompt, flavor, image_dir):
+        pass
 
-# 3 in all directions (46 calls)
-def generate_8192_8192(prompt, flavor, image_dir):
-    pass
+# test class and functions
+# note: this will make many API calls; it's better to run one line at a time!
+if __name__ == "__main__":
+    SESSION_BEARER_TOKEN = 'You can find your API key at https://beta.openai.com'
+    PROMPT = "portal to another dimension, digital art"
+    dalle = Dalle2(SESSION_BEARER_TOKEN)
+    
+    generations = dalle.generate(PROMPT)
+    print(f"{generations=}")
 
-# 2 up, 4 to the sides (45 calls)
-def generate_10240_6144(prompt, flavor, image_dir):
-    pass
+    generations = dalle.generate_from_masked_image(
+        "test/test_working_transparent_crop.png",
+        PROMPT,
+    )
+    print(f"{generations=}")
+    dalle.download(generations)
 
+    # stitched image generation
+    image = dalle.generate_2048_1024(PROMPT, '', 'test')
+    image.save('test/final.png')
+    image.show()
