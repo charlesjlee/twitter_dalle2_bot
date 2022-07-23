@@ -118,16 +118,17 @@ if __name__ == "__main__":
 
     # generate image and save
     dalle = Dalle2(DALLE_BEARER_TOKEN)
-    # Path("/tmp").mkdir(exist_ok=True)
     image = dalle.generate_2048_1024(prompt, flavor)
     image_name = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
     image_path = f"{IMAGE_DIR}/{image_name}.png"
     image.save(image_path)
+    print(f"Saved stitched image: {image_path}")
 
     # generate motivational image and save
     motivational_image_path = f"{IMAGE_DIR}/{image_name}_motivational.png"
     image = generate_motivational_meme(image_path, df.quote[i], df.quote_source[i])
     image.save(motivational_image_path)
+    print(f"Saved motivational image: {motivational_image_path}")
 
     # upload media then send tweet
     media_1 = upload_media(api, image_path)
@@ -143,6 +144,6 @@ if __name__ == "__main__":
     df.at[i, 'tweet_link'] = f"https://twitter.com/i/web/status/{status.id_str}"
     df.to_csv(FILE_PATH, index=False, encoding='utf-8')
 
-    print(f"\nupdated row {i} in {FILE_PATH}")
+    print(f"\nUpdated row {i} in {FILE_PATH}")
     print(f"{df.iloc[i]}")
     print(42*'-' + '\nScript succeeded!')
