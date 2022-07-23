@@ -1,7 +1,6 @@
 import os
 import random
 import string
-import sys
 import tweepy
 
 from dalle2 import Dalle2
@@ -14,7 +13,11 @@ pd.set_option("display.max_columns", None)
 pd.set_option("display.max_rows", None)
 pd.set_option('display.max_colwidth', None)
 
-DALLE_SESSION_BEARER_TOKEN = os.environ["DALLE_SESSION_BEARER_TOKEN"]
+CONSUMER_KEY = os.environ["CONSUMER_KEY"]
+CONSUMER_SECRET = os.environ["CONSUMER_SECRET"]
+TOKEN_KEY = os.environ["TOKEN_KEY"]
+TOKEN_SECRET = os.environ["TOKEN_SECRET"]
+DALLE_BEARER_TOKEN = os.environ["DALLE_BEARER_TOKEN"]
 
 FILE_PATH = 'data/twitter_post_log.csv'
 
@@ -75,9 +78,9 @@ def tweet(api, media_ids, status):
     return api.update_status(media_ids=media_ids,status=status)
 
 if __name__ == "__main__":
-    # auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    # auth.set_access_token(access_token, access_token_secret)
-    # api = tweepy.API(auth)
+    auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+    auth.set_access_token(TOKEN_KEY, TOKEN_SECRET)
+    api = tweepy.API(auth)
 
     # note: must call initialize_twitter_post_log.py before first run
     df = pd.read_csv(FILE_PATH, encoding='utf-8')
@@ -113,8 +116,7 @@ if __name__ == "__main__":
     print(f"{len(prompt)=}")
 
     # generate image and save
-    dalle = Dalle2(DALLE_SESSION_BEARER_TOKEN)
-    sys.exit(1) # todo: delete me
+    dalle = Dalle2(DALLE_BEARER_TOKEN)
     image = dalle.generate_2048_1024(prompt, flavor, 'temp')
     image_name = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
     image_path = f"{IMAGE_DIR}/{image_name}.png"

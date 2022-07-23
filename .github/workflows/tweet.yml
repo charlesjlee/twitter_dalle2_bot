@@ -1,6 +1,5 @@
 name: tweet
 on:
-  push: # todo: disable me after everything is working
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * *' # everyday at midnight
@@ -16,15 +15,15 @@ jobs:
     - run: pip install -r requirements.txt
     - run: python ./send_tweet.py
       env:
-        DALLE_SESSION_BEARER_TOKEN: ${{ secrets.DALLE_SESSION_BEARER_TOKEN }}
-         # CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
-      #   CONSUMER_SECRET: ${{ secrets.CONSUMER_SECRET }}
-      #   ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-      #   ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
-    # - run: |
-    #     git config user.name github-actions
-    #     git config user.email github-actions@github.com
-    #     git add /img
-    #     git add /data/twitter_post_log.csv
-    #     git commit -m "add new images and log record for Tweet"
-    #     git push
+        DALLE_BEARER_TOKEN: ${{ secrets.DALLE_BEARER_TOKEN }}
+        CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
+        CONSUMER_SECRET: ${{ secrets.CONSUMER_SECRET }}
+        TOKEN_KEY: ${{ secrets.TOKEN_KEY }}
+        TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+    - run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git add /img
+        git add /data/twitter_post_log.csv
+        git commit -m "add new images and log record for Tweet"
+        git push
