@@ -4,6 +4,7 @@ import string
 import tweepy
 
 from dalle2 import Dalle2
+from pathlib import Path
 from pillow_utils import generate_motivational_meme
 from string import Template
 from tenacity import retry, wait_exponential, stop_after_attempt
@@ -117,7 +118,8 @@ if __name__ == "__main__":
 
     # generate image and save
     dalle = Dalle2(DALLE_BEARER_TOKEN)
-    image = dalle.generate_2048_1024(prompt, flavor, 'temp')
+    Path("/tmp").mkdir(exist_ok=True)
+    image = dalle.generate_2048_1024(prompt, flavor, 'tmp')
     image_name = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
     image_path = f"{IMAGE_DIR}/{image_name}.png"
     image.save(image_path)

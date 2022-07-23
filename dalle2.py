@@ -66,7 +66,7 @@ class Dalle2():
                 generations = data["generations"]["data"]
                 return generations
             else:
-                print("...Task not completed yet")
+                print("...task not completed yet")
                 time.sleep(self.sleep_seconds)
                 continue
 
