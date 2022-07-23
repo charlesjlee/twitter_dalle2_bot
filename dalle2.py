@@ -130,15 +130,15 @@ class Dalle2():
     # 1 to the sides (3 calls)
     def generate_2048_1024(self, prompt, _flavor, image_dir=os.getcwd()):
         self.generate_and_download(prompt, image_dir=image_dir, file_name='root')
-        root = Image.open(f"{image_dir}/root.jpg")
+        root = Image.open(f"{image_dir}/root.png")
         m, _n = root.size
         
         self.extend_image_once(root, ['left', 'right'], prompt, _flavor, image_dir)
         return merge_horizontally_sequentially(
             [
-                f"{image_dir}/left.jpg",
-                f"{image_dir}/root.jpg",
-                f"{image_dir}/right.jpg",
+                f"{image_dir}/left.png",
+                f"{image_dir}/root.png",
+                f"{image_dir}/right.png",
             ],
             overlap=m//2,
         )
