@@ -118,8 +118,8 @@ if __name__ == "__main__":
 
     # generate image and save
     dalle = Dalle2(DALLE_BEARER_TOKEN)
-    Path("/tmp").mkdir(exist_ok=True)
-    image = dalle.generate_2048_1024(prompt, flavor, 'tmp')
+    # Path("/tmp").mkdir(exist_ok=True)
+    image = dalle.generate_2048_1024(prompt, flavor)
     image_name = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
     image_path = f"{IMAGE_DIR}/{image_name}.png"
     image.save(image_path)
