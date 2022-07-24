@@ -4,7 +4,6 @@ import string
 import tweepy
 
 from dalle2 import Dalle2
-from pathlib import Path
 from pillow_utils import generate_motivational_meme
 from string import Template
 from tenacity import retry, wait_exponential, stop_after_attempt
