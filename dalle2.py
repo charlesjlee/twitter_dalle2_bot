@@ -132,7 +132,7 @@ class Dalle2():
         self.generate_and_download(prompt, image_dir=image_dir, file_name='root')
         root = Image.open(f"{image_dir}/root.png")
         m, _n = root.size
-        
+
         self.extend_image_once(root, ['left', 'right'], prompt, _flavor, image_dir)
         return merge_horizontally_sequentially(
             [
