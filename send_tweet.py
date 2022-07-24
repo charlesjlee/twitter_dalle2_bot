@@ -124,15 +124,21 @@ if __name__ == "__main__":
     print(f"Saved stitched image: {image_path}")
 
     # generate motivational image and save
-    motivational_image_path = f"{IMAGE_DIR}/{image_name}_motivational.png"
+    motivational_image_path = f"{IMAGE_DIR}/{image_name}_motivational.jpg"
     image = generate_motivational_meme(image_path, df.quote[i], df.quote_source[i])
     image.save(motivational_image_path)
     print(f"Saved motivational image: {motivational_image_path}")
 
     # upload media then send tweet
-    media_1 = upload_media(api, image_path)
-    media_2 = upload_media(api, motivational_image_path)
-    status = tweet(api, [media_1.media_id_string, media_2.media_id_string], "Bible or anime?")
+    # todo: media_1's file path is hard-coded in generate_2048_1024()
+    media_1 = upload_media(api, f"{os.getcwd()}/root.png")
+    media_2 = upload_media(api, image_path)
+    media_3 = upload_media(api, motivational_image_path)
+    status = tweet(
+        api,
+        [media_1.media_id_string, media_2.media_id_string, media_3.media_id_string],
+        "Bible or anime?",
+    )
 
     # save data file with updated record
     df.at[i, 'timestamp'] = pd.Timestamp.utcnow()

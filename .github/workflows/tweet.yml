@@ -24,7 +24,7 @@ jobs:
     - run: |
         git config user.name github-actions
         git config user.email github-actions@github.com
-        git add /img
-        git add /data/twitter_post_log.csv
+        git add img
+        git add data/twitter_post_log.csv
         git commit -m "add new images and log record for Tweet"
         git push
