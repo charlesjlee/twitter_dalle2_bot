@@ -42,12 +42,21 @@ motivational_meme_parameters = {
 
 def generate_motivational_meme(image_path, quote, source):
     FONT = 'Libre_Baskerville/LibreBaskerville-Regular.ttf'
-    
+
     image = Image.open(image_path)
     m, n = image.size
     print(f"m={m}, n={n}")
     param = motivational_meme_parameters[image.size]
-    
+
+    # todo: scale instead of using hard-coded values
+    if image.size == (2048, 1024):
+        if len(quote) > 200:
+            param.QUOTE_CHAR_LIMIT = 100
+            param.FONT_SIZE = 40
+        elif len(quote) > 100:
+            param.QUOTE_CHAR_LIMIT = 75
+            param.FONT_SIZE = 55
+
     image = ImageOps.expand(image, border=3, fill='white')
     image = ImageOps.expand(
         image,
@@ -201,7 +210,7 @@ def transparent_crop(image, crop):
 
     image_rgba = image.copy()
     image_rgba.putalpha(image_alpha)
-    return image_rgba    
+    return image_rgba
 
 # test functions
 if __name__ == "__main__":
