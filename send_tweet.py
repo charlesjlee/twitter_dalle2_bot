@@ -126,7 +126,7 @@ if __name__ == "__main__":
     # generate motivational image and save
     motivational_image_path = f"{IMAGE_DIR}/{image_name}_motivational.jpg"
     image = generate_motivational_meme(image_path, df.quote[i], df.quote_source[i])
-    image.convert('RGB').save(motivational_image_path)
+    image.convert('RGB').save(motivational_image_path, format='JPEG', quality=95, subsampling=0)
     print(f"Saved motivational image: {motivational_image_path}")
 
     # upload media then send tweet
