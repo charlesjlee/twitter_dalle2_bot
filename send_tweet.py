@@ -88,7 +88,7 @@ if __name__ == "__main__":
     api = tweepy.API(auth)
 
     # note: must call initialize_twitter_post_log.py before first run
-    df = pd.read_csv(FILE_PATH, encoding='utf-8', dtype={'ID': object})
+    df = pd.read_csv(FILE_PATH, encoding='utf-8', dtype={'tweet_id': object})
 
     # get index of first row without a timestamp
     df_empty_timestamp = df[df.timestamp.isnull()]
