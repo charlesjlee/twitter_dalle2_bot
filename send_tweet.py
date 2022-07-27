@@ -77,6 +77,11 @@ def upload_media(api, image_path):
 def tweet(api, media_ids, status):
     return api.update_status(media_ids=media_ids,status=status)
 
+# DALL E API often returns 500
+@retry(wait=wait_exponential(multiplier=1, min=1, max=60), stop=stop_after_attempt(3))
+def generate_2048_1024(dalle, prompt, flavor):
+    return dalle.generate_2048_1024(prompt, flavor)
+
 if __name__ == "__main__":
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
     auth.set_access_token(TOKEN_KEY, TOKEN_SECRET)
@@ -117,7 +122,7 @@ if __name__ == "__main__":
 
     # generate image and save
     dalle = Dalle2(DALLE_BEARER_TOKEN)
-    image = dalle.generate_2048_1024(prompt, flavor)
+    image = generate_2048_1024(dalle, prompt, flavor)
     image_name = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
     image_path = f"{IMAGE_DIR}/{image_name}.png"
     image.save(image_path)
