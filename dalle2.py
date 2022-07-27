@@ -6,6 +6,7 @@ import time
 import urllib
 import urllib.request
 
+from json.decoder import JSONDecodeError
 from PIL import Image
 from pillow_utils import roll_horizontally, roll_vertically, transparent_crop, merge_horizontally_sequentially
 
@@ -53,7 +54,16 @@ class Dalle2():
         while True:
             url = f"https://labs.openai.com/api/labs/tasks/{data['id']}"
             response = requests.get(url, headers=headers)
-            data = response.json()
+
+            try:
+                data = response.json()
+            except JSONDecodeError:
+                print(f"{data=}")
+                raise
+            except TypeError:
+                print("JSON object was not a str, bytes, or bytearray")
+                print(f"{data=}")
+                raise
 
             if not response.ok:
                 print(f"Request failed with status: {response.status_code}, data: {response.json()}")
