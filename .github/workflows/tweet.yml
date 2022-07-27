@@ -1,6 +1,5 @@
 name: tweet
 on:
-  push: # delete after everything works
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * *' # everyday at midnight
