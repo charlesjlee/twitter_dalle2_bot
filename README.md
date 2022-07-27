@@ -10,20 +10,20 @@ This repo contains the code for a Twitter bot that periodically posts images gen
 1. Sign up for a developer account, see [Twitter guide](https://developer.twitter.com/en/support/twitter-api/developer-account)
 1. Create a new Project and App. Though you can change it later, the name of the App is important because it will appear alongside the automated tweets. `DALL E bot` is a good name. As prompted, make sure you save the key and secret; they will be used to set the `CONSUMER_KEY` and `CONSUMER_SECRET` secrets in GitHub later
 1. This workflow uploads images via the **Media** API, which is currently only implemented in API v1.1 and not API v2. To use API v1.1, we will need **Elevated** access on the project:
-  1. Go to the sidebar on the developer page
-  1. Click **Projects & Apps**
-  1. Click <Your Project Name>
-  1. Move over to the project
-  1. Under the **Access** panel, click **View detailed features**
-  1. At the top, click **Elevated**
-  1. Go through the steps to apply. This might get approved automatically. If not, you'll need to wait before proceeding
+    1. Go to the sidebar on the developer page
+    1. Click **Projects & Apps**
+    1. Click _Your Project Name_
+    1. Move over to the project
+    1. Under the **Access** panel, click **View detailed features**
+    1. At the top, click **Elevated**
+    1. Go through the steps to apply. This might get approved automatically. If not, you'll need to wait before proceeding
 1. We need to enable API v1.1 access for the App and then generate new access credentials, see [this SO question](https://stackoverflow.com/questions/70769239/how-to-enable-the-post-permission-on-twitter-developer-app) for the steps. As prompted, make sure you save the key and secret; they will be used to set the `TOKEN_KEY` and `TOKEN_SECRET` secrets in GitHub later
 1. Now it's finally time to populate the environment variables as repository secrets. Go to your forked repo, click on **Settings** --> **Secrets** --> **Actions**. Then create five new secrets: 
-  1. CONSUMER_KEY
-  1. CONSUMER_SECRET
-  1. TOKEN_KEY
-  1. TOKEN_SECRET
-  1. DALLE_BEARER_TOKEN
+    1. CONSUMER_KEY
+    1. CONSUMER_SECRET
+    1. TOKEN_KEY
+    1. TOKEN_SECRET
+    1. DALLE_BEARER_TOKEN
 1. Trigger a manual run of the `trigger` workflow. The workflow should run to completion and you should see a new tweet in your Twitter account. Note that a single workflow execution eats up 3 credits: one for the root image and then one each for the left & right side expansions via in-painting. On top of that, I added on three retries for a worst case of 9 credits per workflow execution (not really because DALL·E doesn't charge for 500's but let's go with 9). As of July 26, 2022, credits cost $15 per 115 credits, so this adds up to $1.17 per workflow execution. Pretty expensive!
 
 # Details
