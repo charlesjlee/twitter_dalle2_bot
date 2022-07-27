@@ -5,28 +5,27 @@ This repo contains the code for a Twitter bot that periodically posts images gen
 Before we start, a note on costs. A single GitHub Actions workflow execution eats up 3 credits: one for the root image and then one each for the left & right side expansions via in-painting. On top of that, I add up to three retries for a worst case of 9 credits per workflow execution (not really because DALL·E doesn't charge for 500's but let's go with 9). As of July 26, 2022, credits cost $15 per 115 credits, so this adds up to $1.17 per workflow execution. Pretty expensive! Since DALL·E operates on a credits model, you won't get any surprise bills, but the high cost does mean that, after going through all the steps below, you might not leave this bot running for very long.
 
 1. Fork this repo into your account
-1. Verify that the `tweet` workflow ran in the forked repo. If it didn't, then trigger a manual run. The workflow should succeed for the first few steps then fail when it comes to executing `send_tweet.py` because some environment variables are missing. The rest of these steps serve to populate these environment variables
 1. Get access to the DALL·E 2 beta ([sign-up link](https://openai.com/blog/dall-e-now-available-in-beta/))
 1. Grab your DALL·E access bearer token by following the instructions [in this repo's README](https://github.com/ezzcodeezzlife/dalle2-in-python#setup). Your bearer token will start with `sess-`
 1. Get a Twitter account. These days, it's difficult to create a new account without having a working phone number with texting. Anyway, your account needs a verified phone number for developer access
 1. Sign up for a developer account, see [Twitter guide](https://developer.twitter.com/en/support/twitter-api/developer-account)
-1. Create a new Project and App. Though you can change it later, the name of the App is important because it will appear alongside the automated tweets. `DALL E bot` is a good name. As prompted, make sure you save the key and secret; they will be used to set the `CONSUMER_KEY` and `CONSUMER_SECRET` secrets in GitHub later
+1. Create a new Project and App. Though you can change it later, the name of the App is important because it will appear alongside the automated tweets. **DALL·E bot** is a good name. As prompted, make sure you save the key and secret; they will be used to set the `CONSUMER_KEY` and `CONSUMER_SECRET` secrets in GitHub later
 1. This workflow uploads images via the **Media** API, which is currently only implemented in API v1.1 and not API v2. To use API v1.1, we will need **Elevated** access on the project:
     1. Go to the sidebar on the developer page
     1. Click **Projects & Apps**
     1. Click _Your Project Name_
-    1. Move over to the project
+    1. Move over to the project window on the right
     1. Under the **Access** panel, click **View detailed features**
     1. At the top, click **Elevated**
     1. Go through the steps to apply. This might get approved automatically. If not, you'll need to wait before proceeding
-1. We need to enable API v1.1 access for the App and then generate new access credentials, see [this SO question](https://stackoverflow.com/questions/70769239/how-to-enable-the-post-permission-on-twitter-developer-app) for steps. As prompted, make sure you save the key and secret; they will be used to set the `TOKEN_KEY` and `TOKEN_SECRET` secrets in GitHub later
+1. We need to enable API v1.1 Read and Write access for the App and then generate new access credentials, see [this SO question](https://stackoverflow.com/questions/70769239/how-to-enable-the-post-permission-on-twitter-developer-app) for steps. As prompted, make sure you save the key and secret; they will be used to set the `TOKEN_KEY` and `TOKEN_SECRET` secrets in GitHub later
 1. Now it's finally time to populate the environment variables as repository secrets. Go to your forked repo, click on **Settings** --> **Secrets** --> **Actions**. Then create five new secrets: 
+    1. DALLE_BEARER_TOKEN
     1. CONSUMER_KEY
     1. CONSUMER_SECRET
     1. TOKEN_KEY
     1. TOKEN_SECRET
-    1. DALLE_BEARER_TOKEN
-1. Trigger a manual run of the `trigger` workflow. The workflow should run to completion and you should see a new tweet in your Twitter account.
+1. Trigger a manual run of the `tweet` workflow. The workflow should run to completion and you should see both a new tweet in your Twitter account and a new commit in your repo logging the tweet details and images
 
 # Details
 The first step was to get some quotes. All the code here is under the `/data`
