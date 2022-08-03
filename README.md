@@ -9,56 +9,20 @@ research preview|? - July 20, 2022|50/day|none|N/A|no realistic human faces
 beta|July 20, 2022 - current|15/month starting second month|50 for first month, 100 bonus for preview users|115/$15|granted full commercial rights to generated images
 
 ## Rejected tasks
-
+failed with 
 ```
-{
-   "object":"task",
-   "id":"task-QTe6QD7XRb5nRVmj3jNOmTZn",
-   "created":1659485912,
-   "task_type":"text2im",
-   "status":"rejected",
-   "status_information":{
-      "type":"error",
-      "message":"Your task failed as a result of our safety system.",
-      "code":"task_failed_text_safety_system"
-   },
-   "prompt_id":"prompt-L9LWxGF3U9NqwEED3hTiTWw6",
-   "prompt":{
-      "id":"prompt-L9LWxGF3U9NqwEED3hTiTWw6",
-      "object":"prompt",
-      "created":1659485912,
-      "prompt_type":"CaptionPrompt",
-      "prompt":{
-         "caption":"In this world, wherever there is light, there are also shadows. As long as the concept of winners exists, there must also be losers. The selfish desire of wanting to maintain peace causes wars, and hatred is born to protect love., urban byzantine watercolor in the style of Vincent van Gogh"
-      },
-      "parent_generation_id":"None"
-   }
-}
-
-{
-   "object":"task",
-   "id":"task-TgylCIkYeVVyIxEIRsYXJ1MW",
-   "created":1659487245,
-   "task_type":"text2im",
-   "status":"rejected",
-   "status_information":{
-      "type":"error",
-      "message":"Your task failed as a result of our safety system.",
-      "code":"task_failed_text_safety_system"
-   },
-   "prompt_id":"prompt-PfVw8TBHeVuVngg55IrnwaMF",
-   "prompt":{
-      "id":"prompt-PfVw8TBHeVuVngg55IrnwaMF",
-      "object":"prompt",
-      "created":1659487245,
-      "prompt_type":"CaptionPrompt",
-      "prompt":{
-         "caption":"Religion, ideology, resources, land, spite, love, or just because… No matter how pathetic the reason, it’s enough to start a war. War will never cease to exist… Reasons can be thought up after the fact… Human nature pursues strife., urban byzantine watercolor in the style of Vincent van Gogh"
-      },
-      "parent_generation_id":"None"
-   }
+"status_information":{
+   "type":"error",
+   "message":"Your task failed as a result of our safety system.",
+   "code":"task_failed_text_safety_system"
 }
 ```
+
+probable trigger word|date|prompt
+--|--|--
+wars|8/2/2022|In this world, wherever there is light, there are also shadows. As long as the concept of winners exists, there must also be losers. The selfish desire of wanting to maintain peace causes wars, and hatred is born to protect love., urban byzantine watercolor in the style of Vincent van Gogh
+war|8/2/2022|Religion, ideology, resources, land, spite, love, or just because… No matter how pathetic the reason, it’s enough to start a war. War will never cease to exist… Reasons can be thought up after the fact… Human nature pursues strife., urban byzantine watercolor in the style of Vincent van Gogh
+damnation|8/2/2022|Having damnation, because they have cast off their first faith., urban byzantine watercolor in the style of Vincent van Gogh
 
 ## other
 session token expires on July 31 ... waiting for next expiration
