@@ -34,6 +34,30 @@ beta|July 20, 2022 - current|15/month starting second month|50 for first month, 
       "parent_generation_id":"None"
    }
 }
+
+{
+   "object":"task",
+   "id":"task-TgylCIkYeVVyIxEIRsYXJ1MW",
+   "created":1659487245,
+   "task_type":"text2im",
+   "status":"rejected",
+   "status_information":{
+      "type":"error",
+      "message":"Your task failed as a result of our safety system.",
+      "code":"task_failed_text_safety_system"
+   },
+   "prompt_id":"prompt-PfVw8TBHeVuVngg55IrnwaMF",
+   "prompt":{
+      "id":"prompt-PfVw8TBHeVuVngg55IrnwaMF",
+      "object":"prompt",
+      "created":1659487245,
+      "prompt_type":"CaptionPrompt",
+      "prompt":{
+         "caption":"Religion, ideology, resources, land, spite, love, or just because… No matter how pathetic the reason, it’s enough to start a war. War will never cease to exist… Reasons can be thought up after the fact… Human nature pursues strife., urban byzantine watercolor in the style of Vincent van Gogh"
+      },
+      "parent_generation_id":"None"
+   }
+}
 ```
 
 ## other
