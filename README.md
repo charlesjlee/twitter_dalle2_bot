@@ -23,9 +23,7 @@ probable trigger word|date|prompt
 wars|8/2/2022|In this world, wherever there is light, there are also shadows. As long as the concept of winners exists, there must also be losers. The selfish desire of wanting to maintain peace causes wars, and hatred is born to protect love., urban byzantine watercolor in the style of Vincent van Gogh
 war|8/2/2022|Religion, ideology, resources, land, spite, love, or just because… No matter how pathetic the reason, it’s enough to start a war. War will never cease to exist… Reasons can be thought up after the fact… Human nature pursues strife., urban byzantine watercolor in the style of Vincent van Gogh
 damnation|8/2/2022|Having damnation, because they have cast off their first faith., urban byzantine watercolor in the style of Vincent van Gogh
-
-## other
-session token expires on July 31 ... waiting for next expiration
+shot|8/23/2022|It’s just pathetic to give up on something before you even give it a shot
 
 # How to use this repo
 Before we start, a note on costs. A single GitHub Actions workflow execution eats up 3 credits: one for the root image and then one each for the left & right side expansions via in-painting. On top of that, I add up to three retries for a worst case of 9 credits per workflow execution. As of July 26, 2022, 115 credits cost $15, so this adds up to $0.92 per workflow execution in the worst case with 3 retries. Pretty expensive! Since DALL·E operates on a credits model, you won't get any surprise bills, but the high cost does mean that, after going through all the steps below, you might not leave this bot running for very long.
