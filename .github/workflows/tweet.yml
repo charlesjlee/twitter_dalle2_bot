@@ -2,7 +2,7 @@ name: tweet
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *' # everyday at midnight
+    - cron: '0 0 * * Monday' # Monday at midnight
 jobs:
   tweet:
     runs-on: ubuntu-latest
