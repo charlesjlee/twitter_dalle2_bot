@@ -15,11 +15,12 @@ jobs:
     - run: pip install -r requirements.txt
     - run: python ./send_tweet.py
       env:
-        DALLE_BEARER_TOKEN: ${{ secrets.DALLE_BEARER_TOKEN }}
         CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
         CONSUMER_SECRET: ${{ secrets.CONSUMER_SECRET }}
         TOKEN_KEY: ${{ secrets.TOKEN_KEY }}
         TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+        OPENAI_USERNAME: ${{ secrets.OPENAI_USERNAME }}
+        OPENAI_PASSWORD: ${{ secrets.OPENAI_PASSWORD }}
     - run: |
         git config user.name github-actions
         git config user.email github-actions@github.com
