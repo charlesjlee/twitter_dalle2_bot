@@ -7,6 +7,7 @@ from dalle2 import Dalle2
 from pillow_utils import generate_motivational_meme
 from string import Template
 from tenacity import retry, wait_exponential, stop_after_attempt
+from pydalle.imperative.api.labs import get_bearer_token
 
 import pandas as pd
 pd.set_option("display.max_columns", None)
@@ -17,7 +18,10 @@ CONSUMER_KEY = os.environ["CONSUMER_KEY"]
 CONSUMER_SECRET = os.environ["CONSUMER_SECRET"]
 TOKEN_KEY = os.environ["TOKEN_KEY"]
 TOKEN_SECRET = os.environ["TOKEN_SECRET"]
-DALLE_BEARER_TOKEN = os.environ["DALLE_BEARER_TOKEN"]
+
+OPENAI_USERNAME = os.environ["OPENAI_USERNAME"]
+OPENAI_PASSWORD = os.environ["OPENAI_PASSWORD"]
+DALLE_BEARER_TOKEN = get_bearer_token(OPENAI_USERNAME, OPENAI_PASSWORD)
 
 FILE_PATH = 'data/twitter_post_log.csv'
 
@@ -77,7 +81,7 @@ def upload_media(api, image_path):
 def tweet(api, media_ids, status):
     return api.update_status(media_ids=media_ids,status=status)
 
-# DALL E API often returns 500
+# DALL·E API often returns 500
 @retry(wait=wait_exponential(multiplier=1, min=1, max=60), stop=stop_after_attempt(3))
 def generate_2048_1024(dalle, prompt, flavor):
     return dalle.generate_2048_1024(prompt, flavor)
